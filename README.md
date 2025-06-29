@@ -159,6 +159,32 @@ npm run deploy                 # Build and deploy to production
 
 ## 🚀 Deployment
 
+### Prerequisites for Deployment
+
+⚠️ **Important**: Before deploying, you must manually create the S3 bucket for static assets due to CloudFormation dependency constraints.
+
+#### 1. Create S3 Bucket Manually
+
+```bash
+# Replace 'your-stack-name' with your actual stack name
+aws s3 mb s3://your-stack-name-static-assets --region us-east-1
+
+# Enable public access for the bucket (required for CloudFront)
+aws s3api put-public-access-block \
+  --bucket your-stack-name-static-assets \
+  --public-access-block-configuration \
+  "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false"
+```
+
+#### 2. Update Template Configuration
+
+Ensure your `samconfig-prod.toml` or `samconfig-dev.toml` has the correct stack name that matches your bucket name:
+
+```toml
+[default.deploy.parameters]
+stack_name = "your-stack-name"  # This should match the bucket prefix
+```
+
 ### Production Deployment
 ```bash
 npm run deploy
@@ -168,6 +194,7 @@ This command will:
 - Clean the dist folder
 - Build the project for production
 - Deploy to production using the samconfig-prod.toml configuration
+- Configure the CloudFront distribution to use your pre-created S3 bucket
 
 ## 📊 Monitoring and Logging
 

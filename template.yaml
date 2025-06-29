@@ -58,6 +58,7 @@ Resources:
   # S3 Bucket Policy for CloudFront access
   StaticAssetsBucketPolicy:
     Type: AWS::S3::BucketPolicy
+    DependsOn: CloudFrontDistribution
     Properties:
       Bucket: !Ref StaticAssetsBucket
       PolicyDocument:
@@ -68,6 +69,9 @@ Resources:
               Service: cloudfront.amazonaws.com
             Action: s3:GetObject
             Resource: !Sub "${StaticAssetsBucket}/*"
+            Condition:
+              StringEquals:
+                "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
 
   # CloudFront Origin Access Control
   CloudFrontOAC:
