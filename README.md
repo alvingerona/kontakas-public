@@ -1,5 +1,7 @@
 # Kontakas - AWS Lambda Contact Form Handler
 
+![](https://goldencode-solutions-client-assets.s3.us-east-1.amazonaws.com/kontakas/kontakas-logo.jpg)
+
 A serverless contact form processing system built with AWS Lambda, featuring reCAPTCHA validation and email notifications.
 
 ## 🏆 AWS Lambda Hackathon Submission
@@ -49,7 +51,7 @@ Before running locally, ensure you have:
 ### 1. Clone and Install Dependencies
 
 ```bash
-git clone <your-repo-url>
+git clone git@github.com:alvingerona/kontakas-public.git
 cd kontakas
 npm install
 ```
@@ -61,39 +63,20 @@ The project uses environment-specific configurations:
 - `samconfig-dev.toml` - Explicit development configuration  
 - `samconfig-prod.toml` - Production configuration
 
-### 3. Build the Project
+### 3. Start Local Development Server
 
 ```bash
-# Build TypeScript to JavaScript
-npm run build
-
-# Or use the custom esbuild configuration
-node esbuild.js
+# Start development server with automatic rebuilding and hot reload
+npm run dev
 ```
 
-### 4. Start Local Development Server
-
-#### Option 1: Using the Development Script (Recommended)
-```bash
-# Start with automatic rebuilding on file changes
-./etc/start-dev.sh
-```
-
-This script will:
+This command will:
 - Clean and rebuild the project
 - Start file watching for automatic rebuilds
 - Launch SAM local API server with development environment variables
+- Enable warm containers for faster response times
 
-#### Option 2: Manual SAM Commands
-```bash
-# Start local API with development configuration
-sam local start-api --config-file samconfig-dev.toml
-
-# Or with inline parameters
-sam local start-api --parameter-overrides Environment=dev,EnableRecaptcha=false,LogLevel=debug
-```
-
-### 5. Test the API
+### 4. Test the API
 
 The local server will be available at `http://localhost:3000`
 
@@ -155,23 +138,16 @@ The application uses environment-specific variables managed through SAM paramete
 
 ```bash
 # Development
-npm run dev                    # Start development server
-npm run watch                  # Watch mode with auto-rebuild
-./etc/start-dev.sh            # Full development environment
+npm run dev                    # Start development server with hot reload
 
-# Building
-npm run build                  # Compile TypeScript
-node esbuild.js               # Custom build with esbuild
-
-# Deployment
-sam deploy                     # Deploy to development
-sam deploy --config-file samconfig-prod.toml  # Deploy to production
+# Deployment  
+npm run deploy                 # Build and deploy to production
 ```
 
 ## 🧪 Testing
 
 ### Local Testing
-1. Start the local server: `./etc/start-dev.sh`
+1. Start the local server: `npm run dev`
 2. The API will be available at `http://localhost:3000`
 3. Use the test endpoint above or integrate with a frontend
 
@@ -183,15 +159,15 @@ sam deploy --config-file samconfig-prod.toml  # Deploy to production
 
 ## 🚀 Deployment
 
-### Development Deployment
-```bash
-sam deploy --config-file samconfig-dev.toml
-```
-
 ### Production Deployment
 ```bash
-sam deploy --config-file samconfig-prod.toml
+npm run deploy
 ```
+
+This command will:
+- Clean the dist folder
+- Build the project for production
+- Deploy to production using the samconfig-prod.toml configuration
 
 ## 📊 Monitoring and Logging
 
@@ -244,7 +220,7 @@ sam deploy --config-file samconfig-prod.toml
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test locally using `./etc/start-dev.sh`
+4. Test locally using `npm run dev`
 5. Submit a pull request
 
 ---

@@ -117,7 +117,9 @@ async function handleSendContactUsForm(
     }
   }
 
-  return success({});
+  return success({
+    message: "Form submitted successfully",
+  });
 }
 
 export const handler = async (
