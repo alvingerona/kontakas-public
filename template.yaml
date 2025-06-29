@@ -1,7 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  AWS SAM Template with TypeScript support
+Description: > 
+  Kontakas Public Demo - Serverless Application Model (SAM) template.
+  This template deploys a serverless application with an API endpoint and static assets hosted on S3 and served via CloudFront.
 
 Parameters:
   Environment:
