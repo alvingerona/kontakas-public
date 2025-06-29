@@ -1,0 +1,156 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  AWS SAM Template with TypeScript support
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    Description: Environment name
+  EnableRecaptcha:
+    Type: String
+    Default: "false"
+    Description: Enable reCAPTCHA validation
+  LogLevel:
+    Type: String
+    Default: "debug"
+    Description: Log level for the application
+  
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+    Runtime: nodejs20.x
+    Environment:
+      Variables:
+        NODE_OPTIONS: --enable-source-maps
+        ENVIRONMENT: !Ref Environment
+        ENABLE_RECAPTCHA: !Ref EnableRecaptcha
+        LOG_LEVEL: !Ref LogLevel
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS'"
+      AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Requested-With'"
+      AllowOrigin: "'*'"
+      
+Resources:
+  # S3 Bucket for static assets/content
+  StaticAssetsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${AWS::StackName}-static-assets"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: kontakas
+          
+  # S3 Bucket Policy for CloudFront access
+  StaticAssetsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref StaticAssetsBucket
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontAccess
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${StaticAssetsBucket}/*"
+            Condition:
+              StringEquals:
+                "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+
+  # CloudFront Origin Access Control
+  CloudFrontOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${AWS::StackName}-OAC"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # CloudFront Distribution
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: !Sub "${AWS::StackName} CloudFront Distribution"
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad  # CachingDisabled
+          OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # CORS-S3Origin
+        CacheBehaviors:
+          - PathPattern: "/api/*"
+            TargetOriginId: APIOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad  # CachingDisabled
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac  # AllViewerExceptHostHeader
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2
+        Origins:
+          - Id: S3Origin
+            DomainName: !GetAtt StaticAssetsBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+            OriginAccessControlId: !Ref CloudFrontOAC
+          - Id: APIOrigin
+            DomainName: !Sub "${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com"
+            OriginPath: "/Prod"
+            CustomOriginConfig:
+              HTTPPort: 443
+              OriginProtocolPolicy: https-only
+        PriceClass: PriceClass_100
+
+  SendContactUsForm:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/send-contactus-form/index.handler
+      CodeUri: ./dist
+      Events:
+        SendContactUsFormEndpoint:
+          Type: Api
+          Properties:
+            Path: /send-form
+            Method: post
+
+Outputs:
+  SendContactUsForm:
+    Description: "Send contact us form function ARN"
+    Value: !GetAtt SendContactUsForm.Arn
+  StaticAssetsBucket:
+    Description: "S3 Bucket for static assets"
+    Value: !Ref StaticAssetsBucket
+  StaticAssetsBucketWebsiteURL:
+    Description: "S3 Bucket website URL"
+    Value: !GetAtt StaticAssetsBucket.WebsiteURL
+  CloudFrontDistribution:
+    Description: "CloudFront Distribution ID"
+    Value: !Ref CloudFrontDistribution
+  CloudFrontDomainName:
+    Description: "CloudFront Distribution Domain Name"
+    Value: !GetAtt CloudFrontDistribution.DomainName
+  CloudFrontURL:
+    Description: "CloudFront Distribution URL"
+    Value: !Sub "https://${CloudFrontDistribution.DomainName}"

@@ -1,0 +1,16 @@
+version = 0.1
+
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "kontakas-prod-demo"
+s3_prefix = "kontakas-prod-demo"
+s3_bucket = "kontakas-prod-demo-deployment-artifacts"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Environment=prod EnableRecaptcha=true LogLevel=warn"
+
+[default.local_start_api]
+[default.local_start_api.parameters]
+parameter_overrides = "Environment=prod EnableRecaptcha=true LogLevel=warn"

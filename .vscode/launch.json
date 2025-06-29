@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Local SAM API",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "sam",
+      "runtimeArgs": [
+        "local",
+        "start-api",
+        "--debug",
+        "--warm-containers", "LAZY",
+        "--skip-pull-image"
+      ],
+      "port": 5858,
+      "console": "integratedTerminal",
+      "preLaunchTask": "tsc-watch",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "tsc-watch",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "watch"],
+      "isBackground": true,
+      "problemMatcher": "$tsc-watch",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "sam-local-start-api",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "start:api"],
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "dev",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "build"],
+      "problemMatcher": ["$tsc"],
+      "group": "build"
+    }
+  ]
+}

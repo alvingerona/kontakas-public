@@ -1,0 +1,31 @@
+{
+  "name": "kontakas-sam",
+  "version": "1.0.0",
+  "description": "AWS SAM with TypeScript starter",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc && node esbuild.js",
+    "build:prod": "tsc && node esbuild.prod.js",
+    "dev": "rm -rf dist && mkdir -p dist/handlers && node esbuild.js && npm run build && concurrently \"nodemon --watch src --ext ts --exec 'node esbuild.js'\" \"sam local start-api --warm-containers EAGER --config-file samconfig-dev.toml\"",
+    "deploy": "rm -rf dist && mkdir -p dist/handlers && npm run build:prod && sam deploy --config-file samconfig-prod.toml",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.109",
+    "@types/node": "^18.15.11",
+    "concurrently": "^7.6.0",
+    "esbuild": "^0.17.15",
+    "nodemon": "^3.1.10",
+    "typescript": "^5.0.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.839.0",
+    "axios": "^1.10.0",
+    "glob": "^11.0.3",
+    "yup": "^1.6.1"
+  }
+}
