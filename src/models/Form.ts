@@ -6,6 +6,7 @@ import {
   ProcedureAttributes,
   ProcedureEntity,
 } from "../types/entities/ProcedureEntity";
+import { logger } from "../utils/logger";
 
 export default class Form {
   id: number;
@@ -38,7 +39,7 @@ export default class Form {
         | (new (p: {
             form: Form;
             organization: Organization;
-            attributess?: ProcedureAttributes;
+            attributes?: ProcedureAttributes;
           }) => AbstractProcedureHandler)
         | undefined;
 
@@ -53,7 +54,7 @@ export default class Form {
       return new HandlerClass({
         form: this,
         organization: this.organization,
-        attributess: procedure.attributes || {},
+        attributes: procedure.attributes || {},
       });
     });
   }

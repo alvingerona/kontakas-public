@@ -15,7 +15,7 @@ const forms = [
   },
 
   {
-    id: 1,
+    id: 2,
     name: "SES Contact Us Notification",
     organizationId: 1,
     isActive: true,
@@ -25,6 +25,9 @@ const forms = [
       },
       {
         key: "aws-ses-contact-us-notification",
+        attributes: {
+          toEmail: "geronaalvin@gmail.com"
+        }
       },
     ],
   },

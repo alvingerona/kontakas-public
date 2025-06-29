@@ -5,10 +5,10 @@ export const logger = (msg: string, context?: any) => {
     return;
   }
 
-  console.log("=================================");
-  console.log(`LOG: ${msg}`);
+  console.debug("=================================");
+  console.debug(`LOG: ${msg}`);
   if (context) {
-    console.log("Context:", JSON.stringify(context, null, 2));
+    console.debug("Context:", JSON.stringify(context, null, 2));
   }
-  console.log("=================================");
+  console.debug("=================================");
 };

@@ -107,7 +107,7 @@ async function handleSendContactUsForm(
       continue;
     }
 
-    const valid = await procedure.process(formData);
+    const valid = await procedure.process(formData, procedure.getAttributes());
 
     if (!valid.isValid) {
       return validationError({
