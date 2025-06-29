@@ -11,13 +11,20 @@ interface SendMailProps {
   bodyPlainText: string;
   bodyHTML: string;
   contacts: SESContact[];
+  credentials: {
+    accessKeyId: string;
+    secretAccessKey: string;
+  }
 }
 
 export const sesSendMail = async (props: SendMailProps): Promise<any> => {
-  const { region, fromEmail, subject, bodyPlainText, bodyHTML, contacts } =
+  const { region, fromEmail, subject, bodyPlainText, bodyHTML, contacts, credentials } =
     props;
 
-  const client = new SESClient({ region });
+  const client = new SESClient({ 
+    region,
+    credentials 
+  });
   const toEmails = contacts.map((contact) => contact.email);
 
   const params = {

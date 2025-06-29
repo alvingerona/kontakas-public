@@ -29,6 +29,10 @@ export default class SendMailContactUs {
 
     try {
       return await sesSendMail({
+        credentials: {
+          accessKeyId: this.connectorSES.getAccessKeyId() || "",
+          secretAccessKey: this.connectorSES.getSecretAccessKey() || "",
+        },
         region,
         fromEmail,
         subject: options.subject,

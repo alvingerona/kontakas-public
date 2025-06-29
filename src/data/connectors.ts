@@ -9,6 +9,7 @@ const connectorsData: ConnectorEntity[] = [
     isActive: true,
     data: {
       accessKeyId:"",
+      secretAccessKey: "",
       fromEmail: "info@goldencodesolutions.com",
     },
   },
