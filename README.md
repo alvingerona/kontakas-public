@@ -130,9 +130,7 @@ kontakas/
 │   └── services/                       # Business logic services
 ├── template.yaml                       # SAM template (Infrastructure as Code)
 ├── samconfig*.toml                     # Environment-specific configurations
-├── esbuild.js                         # Custom build configuration
-└── etc/
-    └── start-dev.sh                   # Development startup script
+└── esbuild.js                         # Custom build configuration
 ```
 
 ## 🌍 Environment Variables
