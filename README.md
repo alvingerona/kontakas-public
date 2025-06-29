@@ -1,12 +1,12 @@
-# Kontakas - AWS Lambda Contact Form Handler
+# Kontakas - AWS Lambda Contact Form API
 
 ![](https://goldencode-solutions-client-assets.s3.us-east-1.amazonaws.com/kontakas/kontakas-logo.jpg)
 
-A serverless contact form processing system built with AWS Lambda, featuring reCAPTCHA validation and email notifications.
+A serverless contact form processing API built with AWS Lambda, featuring reCAPTCHA validation and email notifications.
 
 ## 🏆 AWS Lambda Hackathon Submission
 
-This project demonstrates the power of AWS Lambda for building scalable, serverless contact form processing with advanced validation and notification capabilities.
+This project demonstrates the power of AWS Lambda for building scalable, serverless contact form APIs with advanced validation and notification capabilities.
 
 ## 🏗 Architecture Overview
 
@@ -33,8 +33,6 @@ This project demonstrates the power of AWS Lambda for building scalable, serverl
 - **AWS API Gateway**: RESTful API endpoints
 - **AWS SAM (Serverless Application Model)**: Infrastructure as Code and local development
 - **AWS CloudWatch**: Logging and monitoring
-- **AWS Systems Manager Parameter Store**: Configuration management (ready for secrets)
-- **AWS Secrets Manager**: Secure API key storage (configured for production)
 
 ## 📋 Prerequisites
 
@@ -63,7 +61,48 @@ The project uses environment-specific configurations:
 - `samconfig-dev.toml` - Explicit development configuration  
 - `samconfig-prod.toml` - Production configuration
 
-### 3. Start Local Development Server
+### 3. Configure API Keys and Secrets
+
+⚠️ **Important**: You must configure your API keys in `src/data/connectors.ts` before deployment.
+
+#### reCAPTCHA Configuration
+1. Get your reCAPTCHA secret key from [Google reCAPTCHA](https://www.google.com/recaptcha/admin)
+2. Update the Google reCAPTCHA connector in `src/data/connectors.ts`:
+
+```typescript
+{
+  id: 2,
+  organizationId: 1,
+  name: "Your Organization - Google Recaptcha",
+  platform: "google-recaptcha",
+  isActive: true,
+  data: {
+    secretKey: "YOUR_RECAPTCHA_SECRET_KEY_HERE",
+  },
+}
+```
+
+#### AWS SES Configuration
+1. Create AWS SES credentials in your AWS account
+2. Verify your sending email address in SES
+3. Update the SES connector in `src/data/connectors.ts`:
+
+```typescript
+{
+  id: 1,
+  organizationId: 1,
+  name: "Your Organization - SES",
+  platform: "aws-ses",
+  isActive: true,
+  data: {
+    accessKeyId: "YOUR_AWS_ACCESS_KEY_ID",
+    secretAccessKey: "YOUR_AWS_SECRET_ACCESS_KEY",
+    fromEmail: "your-verified-email@yourdomain.com",
+  },
+}
+```
+
+### 4. Start Local Development Server
 
 ```bash
 # Start development server with automatic rebuilding and hot reload
@@ -76,7 +115,7 @@ This command will:
 - Launch SAM local API server with development environment variables
 - Enable warm containers for faster response times
 
-### 4. Test the API
+### 5. Test the API
 
 The local server will be available at `http://localhost:3000`
 
@@ -157,44 +196,38 @@ npm run deploy                 # Build and deploy to production
 - **Organization & Form Management**: Multi-tenant form handling
 - **Procedure Pipeline**: Extensible processing workflow
 
+## � Security Considerations
+
+⚠️ **Production Security**: 
+- The current implementation stores API keys directly in `src/data/connectors.ts` for demo purposes
+- **For production use**, migrate sensitive data to:
+  - AWS Secrets Manager
+  - AWS Systems Manager Parameter Store
+  - Environment variables
+- Never commit real API keys to version control
+- Consider implementing IAM roles instead of access keys for SES
+
+## �🚀 Deployment
+
 ## 🚀 Deployment
-
-### Prerequisites for Deployment
-
-⚠️ **Important**: Before deploying, you must manually create the S3 bucket for static assets due to CloudFormation dependency constraints.
-
-#### 1. Create S3 Bucket Manually
-
-```bash
-# Replace 'your-stack-name' with your actual stack name
-aws s3 mb s3://your-stack-name-static-assets --region us-east-1
-
-# Enable public access for the bucket (required for CloudFront)
-aws s3api put-public-access-block \
-  --bucket your-stack-name-static-assets \
-  --public-access-block-configuration \
-  "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false"
-```
-
-#### 2. Update Template Configuration
-
-Ensure your `samconfig-prod.toml` or `samconfig-dev.toml` has the correct stack name that matches your bucket name:
-
-```toml
-[default.deploy.parameters]
-stack_name = "your-stack-name"  # This should match the bucket prefix
-```
 
 ### Production Deployment
 ```bash
+# Build and deploy to production
 npm run deploy
 ```
 
 This command will:
 - Clean the dist folder
 - Build the project for production
-- Deploy to production using the samconfig-prod.toml configuration
-- Configure the CloudFront distribution to use your pre-created S3 bucket
+- Deploy using SAM with the samconfig-prod.toml configuration
+- Create API Gateway endpoint for your Lambda function
+
+### Development Deployment
+```bash
+# Deploy to development environment
+sam deploy --config-file samconfig-dev.toml
+```
 
 ## 📊 Monitoring and Logging
 
@@ -216,11 +249,19 @@ This command will:
 - **Memory Optimization**: Right-sized memory allocation (128MB)
 - **Warm Containers**: Enabled for better performance
 - **Tree Shaking**: Reduced bundle size for faster startup
+## 🎯 Lambda-Specific Optimizations
+
+- **Cold Start Minimization**: Efficient bundling with esbuild
+- **Memory Optimization**: Right-sized memory allocation (128MB)
+- **Timeout Configuration**: 30-second timeout for reliable processing
+- **Tree Shaking**: Reduced bundle size for faster startup
 - **Source Maps**: Enhanced debugging capabilities
 
 ## 📝 API Documentation
 
 ### POST /send-form
+
+**Endpoint**: `https://your-api-id.execute-api.region.amazonaws.com/Prod/send-form`
 
 **Request Body:**
 ```json
@@ -241,6 +282,16 @@ This command will:
   "success": true
 }
 ```
+
+## 🌐 Integration
+
+This API can be integrated with any frontend:
+- **Static websites** (HTML/CSS/JS)
+- **React/Vue/Angular** applications
+- **Mobile applications**
+- **Third-party services** via webhooks
+
+Simply make a POST request to the API Gateway endpoint from your contact form.
 
 ## 🤝 Contributing
 
