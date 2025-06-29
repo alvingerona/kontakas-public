@@ -19,7 +19,7 @@ const connectorsData: ConnectorEntity[] = [
     platform: "google-recaptcha",
     isActive: true,
     data: {
-      secretKey: "6Le-qFkrAAAAAE7FhbtSyRkYMvKlXmzpnLYK3sT8",
+      secretKey: "",
     },
   },
 ];
