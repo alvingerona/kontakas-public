@@ -6,6 +6,10 @@ A serverless contact form processing system built with AWS Lambda, featuring reC
 
 This project demonstrates the power of AWS Lambda for building scalable, serverless contact form processing with advanced validation and notification capabilities.
 
+## 🏗 Architecture Overview
+
+![Kontakas Architecture Diagram](https://goldencode-solutions-client-assets.s3.us-east-1.amazonaws.com/kontakas/kontakas-diagram.jpg)
+
 ## 🚀 How This Application Uses AWS Lambda
 
 ### Core Lambda Functions
